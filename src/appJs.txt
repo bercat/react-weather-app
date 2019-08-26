@@ -1,0 +1,81 @@
+import { 
+  BrowserRouter as Router, 
+  Route, 
+  Switch, 
+  Link, 
+  Redirect 
+} from "react-router-dom";
+
+//Pages
+import Titles from "./components/Titles";
+import Form from "./components/Form";
+import Weather from "./components/Weather";
+
+
+const API_KEY = "12a95f68d9282a53250f412557f5a994";
+
+class App extends React.Component {
+  //state er et object, som lever i et component 
+    /*State har ansvaret for å holde oversikten på endrede data inne i componentet.
+    Det kan for eks være hva som helst brukeren interakterer med på siden, som klikk osv*/
+     state = {
+      temperature: undefined,
+      city: undefined,
+      country: undefined,
+      humidity: undefined,
+      description: undefined,
+      error: undefined
+    }
+
+
+
+  getWeather = async (e) => {
+    e.preventDefault();/*forhindre standard oppførsel 
+    /*henter ut fra Form.js */
+    const  city = e.target.elements.city.value;
+    const  country = e.target.elements.country.value;
+    /*putter verdiene eks {city} inn i URLen */
+    const api_call = await fetch(`http://api.openweathermap.org/data/2.5/weather?q=${city},${country}&appid=${API_KEY}&units=metric`);
+    const data = await api_call.json();
+    /*sjekker om city = true og country = true 
+      sånn at kun da, vil vi rendre ut denne koden: */
+    if(city && country){
+
+    /*setter verdiene til state med metode setState: */
+      this.setState({
+        temperature: data.main.temp,
+        city: data.name,
+        country: data.sys.country,
+        humidity: data.main.humidity,
+        description: data.weather[0].description,
+        error: ""
+      })
+    
+    } else {
+      this.setState({
+        temperature: undefined,
+        city: undefined,
+        country: undefined,
+        humidity: undefined,
+        description: undefined,
+        error: "Please enter the value."
+      })
+    }
+  }
+    
+    
+    
+
+  render() { /*render-metode og returnerer JSX - som har props*/
+    return <Router>
+      <Route path="/" component={MainPage} />
+    </Router>
+  }
+};
+
+
+
+
+
+
+export default App; /*godtar import */
